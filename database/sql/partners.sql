@@ -1,32 +1,31 @@
 -- Partners Table Manual Query (if needed for direct database manipulation)
 -- This file documents the partners table structure
 
--- Create Partners Table
--- CREATE TABLE partners (
---     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
---     company_name VARCHAR(255) NOT NULL,
---     cui BIGINT UNSIGNED UNIQUE NOT NULL,
---     trade_register_number BIGINT UNSIGNED NULL,
---     address VARCHAR(255) NOT NULL,
---     city VARCHAR(100) NOT NULL,
---     county VARCHAR(100) NOT NULL,
---     postal_code VARCHAR(10) NULL,
---     phone VARCHAR(20) NOT NULL,
---     email VARCHAR(255) NOT NULL,
---     contact_person VARCHAR(255) NOT NULL,
---     bank_account VARCHAR(50) NULL,
---     bank_name VARCHAR(255) NULL,
---     notes LONGTEXT NULL,
---     deleted_at TIMESTAMP NULL,
---     created_at TIMESTAMP NULL,
---     updated_at TIMESTAMP NULL,
---     INDEX idx_cui (cui),
---     INDEX idx_city (city)
--- ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE partners (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    company_name VARCHAR(255) NOT NULL,
+    cui BIGINT UNSIGNED UNIQUE NOT NULL,
+    trade_register_number BIGINT UNSIGNED NULL,
+    address VARCHAR(255) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    county VARCHAR(100) NOT NULL,
+    postal_code VARCHAR(10) NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    contact_person VARCHAR(255) NOT NULL,
+    bank_account VARCHAR(50) NULL,
+    bank_name VARCHAR(255) NULL,
+    notes LONGTEXT NULL,
+    deleted_at TIMESTAMP NULL,
+    created_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL,
+    INDEX idx_cui (cui),
+    INDEX idx_city (city)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Sample Insert
--- INSERT INTO partners (company_name, cui, trade_register_number, address, city, county, postal_code, phone, email, contact_person, bank_account, bank_name, created_at, updated_at)
--- VALUES ('Example Company SRL', 1234567890, 1234, 'Str. Example 123', 'Bucharest', 'Ilfov', '010001', '+40213456789', 'contact@example.com', 'John Doe', 'RO49ABNA0123456789', 'Alpha Bank', NOW(), NOW());
+INSERT INTO partners (company_name, cui, trade_register_number, address, city, county, postal_code, phone, email, contact_person, bank_account, bank_name, created_at, updated_at)
+VALUES ('Example Company SRL', 1234567890, 1234, 'Str. Example 123', 'Bucharest', 'Ilfov', '010001', '+40213456789', 'contact@example.com', 'John Doe', 'RO49ABNA0123456789', 'Alpha Bank', NOW(), NOW());
 
 -- Set user as admin (for testing)
--- UPDATE users SET IsAdmin = 1 WHERE id = 1;
+UPDATE users SET IsAdmin = 1 WHERE id = 1;
