@@ -29,7 +29,7 @@ class Partner extends Model
 
     public static function rules($id = null)
     {
-        $cuiRule = 'required|string|max:20|unique:partners,cui';
+        $cuiRule = 'required|integer|digits:10|unique:partners,cui';
         if ($id) {
             $cuiRule .= ',' . $id;
         }
@@ -37,7 +37,7 @@ class Partner extends Model
         return [
             'company_name' => 'required|string|max:255',
             'cui' => $cuiRule,
-            'trade_register_number' => 'nullable|string|max:50',
+            'trade_register_number' => 'nullable|integer',
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:100',
             'county' => 'required|string|max:100',

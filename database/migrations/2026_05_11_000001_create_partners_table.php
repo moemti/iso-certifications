@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('partners', function (Blueprint $table) {
             $table->id();
             $table->string('company_name');
-            $table->string('cui', 20)->unique();
-            $table->string('trade_register_number', 50)->nullable();
+            $table->unsignedBigInteger('cui')->unique();
+            $table->unsignedBigInteger('trade_register_number')->nullable();
             $table->string('address');
             $table->string('city', 100);
             $table->string('county', 100);
