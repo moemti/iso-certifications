@@ -22,9 +22,13 @@
                 </a>
                 <nav class="header-nav" aria-label="Site navigation">
                     @auth
-                        <div class="user-info">
-                            <span class="company-name">{{ auth()->user()->company->legal_name ?? auth()->user()->name }}</span>
-                        </div>
+                        <a class="user-info" href="{{ route('profile.edit') }}" aria-label="Edit profile">
+                            @if (auth()->user()->company)
+                                <span class="company-name">{{ auth()->user()->company->legal_name }}</span>
+                                <span class="user-sep">·</span>
+                            @endif
+                            <span class="user-name">{{ auth()->user()->name }}</span>
+                        </a>
                         <form method="POST" action="{{ route('logout') }}" style="display:inline">
                             @csrf
                             <button type="submit" class="header-link header-btn">Sign out</button>

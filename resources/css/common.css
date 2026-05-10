@@ -606,6 +606,14 @@
     border: 1px solid var(--border);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.05);
+    text-decoration: none;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.user-info:hover {
+    background: rgba(255, 255, 255, 0.09);
+    border-color: rgba(255, 255, 255, 0.26);
+    transform: translateY(-1px);
 }
 
 .company-name {
@@ -729,6 +737,17 @@
     padding: 40px 16px 60px;
 }
 
+.profile-page {
+    padding-top: 24px;
+}
+
+.profile-stack {
+    width: 100%;
+    max-width: 520px;
+    display: grid;
+    gap: 20px;
+}
+
 .auth-card {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--border);
@@ -736,6 +755,10 @@
     padding: 40px;
     width: 100%;
     max-width: 440px;
+}
+
+.auth-card--wide {
+    max-width: none;
 }
 
 .auth-title {
