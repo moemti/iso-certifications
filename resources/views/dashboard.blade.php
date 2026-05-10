@@ -64,6 +64,13 @@
             <div class="launch-box">
                 <div class="label">Quick Actions</div>
                 <div class="value">&nbsp;</div>
+                @if (auth()->user()->IsAdmin)
+                    <div style="margin-top: 12px;">
+                        <a href="{{ route('partners.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: block;">
+                            Partners
+                        </a>
+                    </div>
+                @endif
             </div>
             
             <div class="contact">
