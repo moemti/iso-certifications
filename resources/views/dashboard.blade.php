@@ -1,58 +1,73 @@
 <x-layouts.app :title="'Dashboard'">
     <div class="page-main">
         <section class="hero" aria-labelledby="dashboard-title">
-            <div class="eyebrow">Dashboard</div>
-            <h1 id="dashboard-title" class="hero-title">Welcome, {{ auth()->user()->name }}!</h1>
-            <p class="lead">
-                Manage your certification projects, collaborate with your team, and track your progress toward audit readiness and compliance.
-            </p>
+            <h2 id="dashboard-title" class="section-title">
+                Here are your certification projects. Track progress, invite your team, and manage all your compliance work in one place.
+            </h2>
 
-            <div class="actions">
-                <a class="button button-primary" href="#">Start a new project</a>
-                <a class="button button-secondary" href="#">View all projects</a>
-            </div>
+            <!-- Project List -->
+            <div class="project-list" aria-label="Your Projects">
+                <!-- Example: Loop through projects -->
+                @php // Replace with real project loop
+                $projects = [
+                    [
+                        'name' => 'ISO 9001:2024 Implementation',
+                        'company' => 'Acme Corp',
+                        'type' => 'ISO 9001',
+                        'registration_status' => 'approved',
+                        'progress_status' => 'partial_completed',
+                    ],
+                    [
+                        'name' => 'ISO 27001:2026 Readiness',
+                        'company' => 'Acme Corp',
+                        'type' => 'ISO 27001',
+                        'registration_status' => 'pending_approval',
+                        'progress_status' => 'partial_completed',
+                    ],
+                ];
+                @endphp
+                @if (count($projects))
+                    <div class="project-table">
+                        <div class="project-table-head">
+                            <div>Project</div>
+                            <div>Company</div>
+                            <div>Type</div>
+                            <div>Status</div>
 
-            <div class="features" aria-label="Your tools">
-                <div class="feature">
-                    <strong>Project Overview</strong>
-                    <span>See all your certification projects and their current status in one place.</span>
-                </div>
-                <div class="feature">
-                    <strong>Team Management</strong>
-                    <span>Invite colleagues, assign roles, and collaborate securely on documentation and tasks.</span>
-                </div>
-                <div class="feature">
-                    <strong>Deliverables & Evidence</strong>
-                    <span>Upload, organize, and access all required documents and evidence for audits.</span>
-                </div>
+                            <div></div>
+                        </div>
+                        @foreach ($projects as $project)
+                            <div class="project-table-row">
+                                <div class="project-name"><a href="#">{{ $project['name'] }}</a></div>
+                                <div>{{ $project['company'] }}</div>
+                                <div>{{ $project['type'] }}</div>
+                                <div>
+                                    <span class="status-badge status-{{ $project['registration_status'] }}">
+                                        {{ ucfirst(str_replace('_', ' ', $project['registration_status'])) }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="empty-state">
+                        <div class="empty-icon">📁</div>
+                        <div class="empty-title">No projects yet</div>
+                        <div class="empty-desc">Start your first certification project to begin your compliance journey.</div>
+                        <a class="button button-primary" href="#">Start a new project</a>
+                    </div>
+                @endif
             </div>
         </section>
 
-        <aside class="info-card" aria-label="Account information">
+        <aside class="info-card" aria-label="Quick actions and account info">
             <div class="launch-box">
-                <div class="label">Account</div>
-                <div class="value">Active</div>
+                <div class="label">Quick Actions</div>
+                <div class="value">&nbsp;</div>
             </div>
-
-            <div class="list">
-                <div class="list-item">
-                    <span class="check">&check;</span>
-                    <span>Logged in as <strong>{{ auth()->user()->email }}</strong></span>
-                </div>
-                <div class="list-item">
-                    <span class="check">&check;</span>
-                    <span>Access your projects and team from the dashboard.</span>
-                </div>
-                <div class="list-item">
-                    <span class="check">&check;</span>
-                    <span>Update your profile and account settings anytime.</span>
-                </div>
-            </div>
-
+            
             <div class="contact">
-                <p>
-                    Need help or have questions? Contact support:
-                </p>
+                <p>Need help or have questions?</p>
                 <a href="mailto:admin@iso-certifications.net">admin@iso-certifications.net</a>
             </div>
         </aside>

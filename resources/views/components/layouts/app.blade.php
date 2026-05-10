@@ -23,15 +23,8 @@
                 <nav class="header-nav" aria-label="Site navigation">
                     @auth
                         <div class="user-info">
-                            @if(auth()->user()->company ?? null)
-                                <span class="company-name">{{ auth()->user()->company->legal_name }}</span>
-                                <span class="user-sep">/</span>
-                            @endif
-                            <span class="user-name">{{ auth()->user()->name }}</span>
+                            <span class="company-name">{{ auth()->user()->company->legal_name ?? auth()->user()->name }}</span>
                         </div>
-                        @if (Route::has('dashboard'))
-                            <a class="header-link" href="{{ url('/dashboard') }}">Dashboard</a>
-                        @endif
                         <form method="POST" action="{{ route('logout') }}" style="display:inline">
                             @csrf
                             <button type="submit" class="header-link header-btn">Sign out</button>
