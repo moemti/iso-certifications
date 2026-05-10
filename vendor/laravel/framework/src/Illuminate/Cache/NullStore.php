@@ -2,10 +2,9 @@
 
 namespace Illuminate\Cache;
 
-use Illuminate\Contracts\Cache\CanFlushLocks;
 use Illuminate\Contracts\Cache\LockProvider;
 
-class NullStore extends TaggableStore implements CanFlushLocks, LockProvider
+class NullStore extends TaggableStore implements LockProvider
 {
     use RetrievesMultipleKeys;
 
@@ -38,7 +37,7 @@ class NullStore extends TaggableStore implements CanFlushLocks, LockProvider
      *
      * @param  string  $key
      * @param  mixed  $value
-     * @return false
+     * @return bool
      */
     public function increment($key, $value = 1)
     {
@@ -50,7 +49,7 @@ class NullStore extends TaggableStore implements CanFlushLocks, LockProvider
      *
      * @param  string  $key
      * @param  mixed  $value
-     * @return false
+     * @return bool
      */
     public function decrement($key, $value = 1)
     {
@@ -92,34 +91,6 @@ class NullStore extends TaggableStore implements CanFlushLocks, LockProvider
     public function restoreLock($name, $owner)
     {
         return $this->lock($name, 0, $owner);
-    }
-
-    /**
-     * Flush all locks managed by the store.
-     */
-    public function flushLocks(): bool
-    {
-        return true;
-    }
-
-    /**
-     * Determine if the lock store is separate from the cache store.
-     */
-    public function hasSeparateLockStore(): bool
-    {
-        return false;
-    }
-
-    /**
-     * Adjust the expiration time of a cached item.
-     *
-     * @param  string  $key
-     * @param  int  $seconds
-     * @return bool
-     */
-    public function touch($key, $seconds)
-    {
-        return false;
     }
 
     /**

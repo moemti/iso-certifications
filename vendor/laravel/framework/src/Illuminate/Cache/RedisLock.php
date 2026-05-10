@@ -18,6 +18,7 @@ class RedisLock extends Lock
      * @param  string  $name
      * @param  int  $seconds
      * @param  string|null  $owner
+     * @return void
      */
     public function __construct($redis, $name, $seconds, $owner = null)
     {
@@ -63,7 +64,7 @@ class RedisLock extends Lock
     /**
      * Returns the owner value written into the driver for this lock.
      *
-     * @return string|null
+     * @return string
      */
     protected function getCurrentOwner()
     {

@@ -4,19 +4,15 @@ namespace Illuminate\Queue;
 
 use Illuminate\Contracts\Queue\Queue as QueueContract;
 use Illuminate\Queue\Jobs\BeanstalkdJob;
-use Illuminate\Support\Collection;
-use Pheanstalk\Contract\JobIdInterface;
+use Pheanstalk\Job as PheanstalkJob;
 use Pheanstalk\Pheanstalk;
-use Pheanstalk\Values\Job;
-use Pheanstalk\Values\JobId;
-use Pheanstalk\Values\TubeName;
 
 class BeanstalkdQueue extends Queue implements QueueContract
 {
     /**
      * The Pheanstalk instance.
      *
-     * @var \Pheanstalk\Contract\PheanstalkManagerInterface&\Pheanstalk\Contract\PheanstalkPublisherInterface&\Pheanstalk\Contract\PheanstalkSubscriberInterface
+     * @var \Pheanstalk\Pheanstalk
      */
     protected $pheanstalk;
 
@@ -44,19 +40,19 @@ class BeanstalkdQueue extends Queue implements QueueContract
     /**
      * Create a new Beanstalkd queue instance.
      *
-     * @param  \Pheanstalk\Contract\PheanstalkManagerInterface&\Pheanstalk\Contract\PheanstalkPublisherInterface&\Pheanstalk\Contract\PheanstalkSubscriberInterface  $pheanstalk
+     * @param  \Pheanstalk\Pheanstalk  $pheanstalk
      * @param  string  $default
      * @param  int  $timeToRun
      * @param  int  $blockFor
      * @param  bool  $dispatchAfterCommit
+     * @return void
      */
-    public function __construct(
-        $pheanstalk,
-        $default,
-        $timeToRun,
-        $blockFor = 0,
-        $dispatchAfterCommit = false,
-    ) {
+    public function __construct(Pheanstalk $pheanstalk,
+                                $default,
+                                $timeToRun,
+                                $blockFor = 0,
+                                $dispatchAfterCommit = false)
+    {
         $this->default = $default;
         $this->blockFor = $blockFor;
         $this->timeToRun = $timeToRun;
@@ -72,119 +68,9 @@ class BeanstalkdQueue extends Queue implements QueueContract
      */
     public function size($queue = null)
     {
-        $stats = $this->pheanstalk->statsTube(new TubeName($this->getQueue($queue)));
+        $queue = $this->getQueue($queue);
 
-        return $stats->currentJobsReady
-            + $stats->currentJobsDelayed
-            + $stats->currentJobsReserved;
-    }
-
-    /**
-     * Get the number of pending jobs.
-     *
-     * @param  string|null  $queue
-     * @return int
-     */
-    public function pendingSize($queue = null)
-    {
-        return $this->pheanstalk->statsTube(new TubeName($this->getQueue($queue)))->currentJobsReady;
-    }
-
-    /**
-     * Get the number of delayed jobs.
-     *
-     * @param  string|null  $queue
-     * @return int
-     */
-    public function delayedSize($queue = null)
-    {
-        return $this->pheanstalk->statsTube(new TubeName($this->getQueue($queue)))->currentJobsDelayed;
-    }
-
-    /**
-     * Get the number of reserved jobs.
-     *
-     * @param  string|null  $queue
-     * @return int
-     */
-    public function reservedSize($queue = null)
-    {
-        return $this->pheanstalk->statsTube(new TubeName($this->getQueue($queue)))->currentJobsReserved;
-    }
-
-    /**
-     * Get the pending jobs for the given queue.
-     *
-     * @param  string|null  $queue
-     * @return \Illuminate\Support\Collection
-     */
-    public function pendingJobs($queue = null): Collection
-    {
-        return new Collection;
-    }
-
-    /**
-     * Get the delayed jobs for the given queue.
-     *
-     * @param  string|null  $queue
-     * @return \Illuminate\Support\Collection
-     */
-    public function delayedJobs($queue = null): Collection
-    {
-        return new Collection;
-    }
-
-    /**
-     * Get the reserved jobs for the given queue.
-     *
-     * @param  string|null  $queue
-     * @return \Illuminate\Support\Collection
-     */
-    public function reservedJobs($queue = null): Collection
-    {
-        return new Collection;
-    }
-
-    /**
-     * Get all pending jobs across every queue.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function allPendingJobs(): Collection
-    {
-        return new Collection;
-    }
-
-    /**
-     * Get all delayed jobs across every queue.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function allDelayedJobs(): Collection
-    {
-        return new Collection;
-    }
-
-    /**
-     * Get all reserved jobs across every queue.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function allReservedJobs(): Collection
-    {
-        return new Collection;
-    }
-
-    /**
-     * Get the creation timestamp of the oldest pending job, excluding delayed jobs.
-     *
-     * @param  string|null  $queue
-     * @return int|null
-     */
-    public function creationTimeOfOldestPendingJob($queue = null)
-    {
-        // Not supported by Beanstalkd...
-        return null;
+        return (int) $this->pheanstalk->statsTube($queue)->current_jobs_ready;
     }
 
     /**
@@ -218,9 +104,7 @@ class BeanstalkdQueue extends Queue implements QueueContract
      */
     public function pushRaw($payload, $queue = null, array $options = [])
     {
-        $this->pheanstalk->useTube(new TubeName($this->getQueue($queue)));
-
-        return $this->pheanstalk->put(
+        return $this->pheanstalk->useTube($this->getQueue($queue))->put(
             $payload, Pheanstalk::DEFAULT_PRIORITY, Pheanstalk::DEFAULT_DELAY, $this->timeToRun
         );
     }
@@ -238,13 +122,11 @@ class BeanstalkdQueue extends Queue implements QueueContract
     {
         return $this->enqueueUsing(
             $job,
-            $this->createPayload($job, $this->getQueue($queue), $data, $delay),
+            $this->createPayload($job, $this->getQueue($queue), $data),
             $queue,
             $delay,
             function ($payload, $queue, $delay) {
-                $this->pheanstalk->useTube(new TubeName($this->getQueue($queue)));
-
-                return $this->pheanstalk->put(
+                return $this->pheanstalk->useTube($this->getQueue($queue))->put(
                     $payload,
                     Pheanstalk::DEFAULT_PRIORITY,
                     $this->secondsUntil($delay),
@@ -281,19 +163,11 @@ class BeanstalkdQueue extends Queue implements QueueContract
      */
     public function pop($queue = null)
     {
-        $this->pheanstalk->watch(
-            $tube = new TubeName($queue = $this->getQueue($queue))
-        );
+        $queue = $this->getQueue($queue);
 
-        foreach ($this->pheanstalk->listTubesWatched() as $watched) {
-            if ($watched->value !== $tube->value) {
-                $this->pheanstalk->ignore($watched);
-            }
-        }
+        $job = $this->pheanstalk->watchOnly($queue)->reserveWithTimeout($this->blockFor);
 
-        $job = $this->pheanstalk->reserveWithTimeout($this->blockFor);
-
-        if ($job instanceof JobIdInterface) {
+        if ($job instanceof PheanstalkJob) {
             return new BeanstalkdJob(
                 $this->container, $this->pheanstalk, $job, $this->connectionName, $queue
             );
@@ -309,9 +183,9 @@ class BeanstalkdQueue extends Queue implements QueueContract
      */
     public function deleteMessage($queue, $id)
     {
-        $this->pheanstalk->useTube(new TubeName($this->getQueue($queue)));
+        $queue = $this->getQueue($queue);
 
-        $this->pheanstalk->delete(new Job(new JobId($id), ''));
+        $this->pheanstalk->useTube($queue)->delete(new PheanstalkJob($id, ''));
     }
 
     /**
@@ -328,7 +202,7 @@ class BeanstalkdQueue extends Queue implements QueueContract
     /**
      * Get the underlying Pheanstalk instance.
      *
-     * @return \Pheanstalk\Contract\PheanstalkManagerInterface&\Pheanstalk\Contract\PheanstalkPublisherInterface&\Pheanstalk\Contract\PheanstalkSubscriberInterface
+     * @return \Pheanstalk\Pheanstalk
      */
     public function getPheanstalk()
     {
