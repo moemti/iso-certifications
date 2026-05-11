@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <div class="list-page">
+    <div class="list-page" style="padding-top: calc(var(--header-height, 74px) + 24px);">
         <div class="list-shell">
             <div class="auth-card auth-card--wide list-card">
                 <h1 class="auth-title">Project Types</h1>

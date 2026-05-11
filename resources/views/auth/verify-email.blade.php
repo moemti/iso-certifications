@@ -1,5 +1,5 @@
 <x-layouts.app :title="'Verify Email'">
-    <div class="auth-page">
+    <div class="auth-page" style="padding-top: calc(var(--header-height, 74px) + 24px);">
         <div class="auth-card">
             <h1 class="auth-title">Verify your email</h1>
             <p class="auth-desc">

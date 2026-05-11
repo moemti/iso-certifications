@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <div class="auth-page">
+    <div class="auth-page" style="padding-top: calc(var(--header-height, 74px) + 24px);">
         <div class="auth-card auth-card--wide" style="max-width: 920px;">
             <h1 class="auth-title">Create New Project</h1>
             <p class="auth-desc">Choose a project type and we will generate all chapter sections from its template.</p>

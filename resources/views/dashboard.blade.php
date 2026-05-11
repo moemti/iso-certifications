@@ -52,25 +52,18 @@
         </section>
 
         <aside class="info-card" aria-label="Quick actions and account info">
-            <div class="launch-box">
-                <div class="label">Quick Actions</div>
-                <div class="value">&nbsp;</div>
-                <div style="margin-top: 12px;">
-                    <a href="{{ route('projects.create') }}" class="button button-primary" style="width: 100%; text-align: center; display: block;">
+            <div class="launch-box" style="padding-top: 18px; padding-bottom: 18px;">
+                <div style="margin-top: 0; display: flex; flex-direction: column; gap: 12px;">
+                    <a href="{{ route('projects.create') }}" class="button button-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 50px;">
                         New Project
                     </a>
-                </div>
                 @if (auth()->user()->IsAdmin)
-                    <div style="margin-top: 12px;">
-                        <a href="{{ route('partners.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: block;">
-                            Partners
-                        </a>
-                    </div>
-                    <div style="margin-top: 12px;">
-                        <a href="{{ route('project-types.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: block;">
-                            Project Types
-                        </a>
-                    </div>
+                    <a href="{{ route('partners.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 50px;">
+                        Partners
+                    </a>
+                    <a href="{{ route('project-types.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 50px;">
+                        Project Types
+                    </a>
                 @endif
             </div>
             

@@ -1,5 +1,5 @@
 <x-layouts.app :title="'Sign in'">
-    <div class="auth-page">
+    <div class="auth-page" style="padding-top: calc(var(--header-height, 74px) + 24px);">
         <div class="auth-card">
             <h1 class="auth-title">Sign in</h1>
             <p class="auth-desc">Welcome back. Sign in to your account to continue.</p>
