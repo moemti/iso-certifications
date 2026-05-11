@@ -50,6 +50,9 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/projects/create', [ProjectController::class, 'create'])->name('projects.create');
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::patch('/projects/{project}/chapters/{projectChapter}', [ProjectController::class, 'updateChapter'])->name('projects.chapters.update');
+    Route::patch('/projects/{project}/chapters/{projectChapter}/blocks/{projectChapterBlock}', [ProjectController::class, 'updateBlock'])->name('projects.chapters.blocks.update');
 });
 
 require __DIR__.'/auth.php';

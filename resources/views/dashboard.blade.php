@@ -29,7 +29,7 @@
                         </div>
                         @foreach ($projects as $project)
                             <div class="project-table-row">
-                                <div class="project-name"><a href="#">{{ $project->name }}</a></div>
+                                <div class="project-name"><a href="{{ route('projects.show', $project) }}">{{ $project->name }}</a></div>
                                 <div>{{ $project->projectType->name }}</div>
                                 <div>{{ $project->chapters_count }}</div>
                                 <div>
@@ -57,14 +57,15 @@
                     <a href="{{ route('projects.create') }}" class="button button-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 50px;">
                         New Project
                     </a>
-                @if (auth()->user()->IsAdmin)
-                    <a href="{{ route('partners.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 50px;">
-                        Partners
-                    </a>
-                    <a href="{{ route('project-types.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 50px;">
-                        Project Types
-                    </a>
-                @endif
+                    @if (auth()->user()->IsAdmin)
+                        <a href="{{ route('partners.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 50px;">
+                            Partners
+                        </a>
+                        <a href="{{ route('project-types.index') }}" class="button button-primary" style="width: 100%; text-align: center; display: flex; align-items: center; justify-content: center; min-height: 50px;">
+                            Project Types
+                        </a>
+                    @endif
+                </div>
             </div>
             
             <div class="contact">

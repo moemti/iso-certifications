@@ -1061,3 +1061,248 @@ input.form-input:-moz-autofill:focus {
         justify-content: flex-end;
     }
 }
+
+/* ── Project Document View ────────────────────────────────── */
+
+.doc-page-shell {
+    padding: calc(var(--header-height) + 22px) 16px 56px;
+}
+
+.doc-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.doc-sidebar {
+    position: sticky;
+    top: calc(var(--header-height) + 16px);
+    background: rgba(9, 19, 35, 0.9);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+}
+
+.doc-sidebar-title {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text-main);
+}
+
+.doc-sidebar-subtitle {
+    margin: 6px 0 14px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.doc-chapter-nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.doc-nav-link {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+    text-decoration: none;
+    color: #dbe6f4;
+    font-size: 13px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.doc-nav-link:hover {
+    border-color: rgba(47, 183, 255, 0.45);
+    background: rgba(47, 183, 255, 0.12);
+}
+
+.doc-main {
+    min-width: 0;
+}
+
+.doc-paper {
+    background: #f8fafc;
+    color: #0f172a;
+    border-radius: 14px;
+    padding: 38px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.doc-header {
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 18px;
+    margin-bottom: 24px;
+}
+
+.doc-header h1 {
+    margin: 0;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+}
+
+.doc-header p {
+    margin: 8px 0 0;
+    color: #475569;
+}
+
+.doc-chapter {
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px dashed #cbd5e1;
+}
+
+.doc-chapter:last-child {
+    margin-bottom: 0;
+    border-bottom: 0;
+}
+
+.doc-chapter-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.doc-chapter-head h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.doc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.doc-tag {
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #334155;
+    background: #e2e8f0;
+    text-transform: uppercase;
+}
+
+.doc-tag-required {
+    color: #7f1d1d;
+    background: #fee2e2;
+    border-color: #fecaca;
+}
+
+.doc-tag-editable {
+    color: #14532d;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.doc-tag-locked {
+    color: #1e3a8a;
+    background: #dbeafe;
+    border-color: #bfdbfe;
+}
+
+.doc-guidance {
+    margin: 0 0 10px;
+    color: #334155;
+    font-style: italic;
+}
+
+.doc-template-text {
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #94a3b8;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 12px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    color: #0f172a;
+}
+
+.doc-edit-form {
+    display: grid;
+    gap: 10px;
+}
+
+.doc-block {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid #dbe2ea;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.doc-block-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.doc-image-preview {
+    width: 100%;
+    max-height: 460px;
+    object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    margin: 8px 0;
+}
+
+.doc-image-caption {
+    margin: 6px 0;
+    font-size: 14px;
+    color: #334155;
+}
+
+.doc-edit-form .form-label {
+    color: #334155;
+}
+
+.doc-edit-form .form-input {
+    color: #0f172a !important;
+    background: #ffffff !important;
+    border-color: #94a3b8;
+}
+
+.doc-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+}
+
+.doc-form-actions .form-check {
+    color: #334155;
+}
+
+.doc-locked-note {
+    margin: 0;
+    border: 1px solid #bfdbfe;
+    background: #eff6ff;
+    color: #1e3a8a;
+    border-radius: 8px;
+    padding: 10px 12px;
+}
+
+@media (max-width: 1020px) {
+    .doc-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .doc-sidebar {
+        position: static;
+    }
+
+    .doc-paper {
+        padding: 22px;
+    }
+}

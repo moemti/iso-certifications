@@ -11,9 +11,21 @@ class ProjectChapter extends Model
         'project_type_chapter_id',
         'title',
         'description',
+        'admin_default_text',
+        'user_content',
         'sort_order',
+        'is_required',
+        'is_user_editable',
         'status',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_required' => 'boolean',
+            'is_user_editable' => 'boolean',
+        ];
+    }
 
     public function project()
     {
@@ -23,5 +35,10 @@ class ProjectChapter extends Model
     public function template()
     {
         return $this->belongsTo(ProjectTypeChapter::class, 'project_type_chapter_id');
+    }
+
+    public function blocks()
+    {
+        return $this->hasMany(ProjectChapterBlock::class, 'project_chapter_id')->orderBy('sort_order');
     }
 }

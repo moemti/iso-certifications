@@ -92,7 +92,11 @@
         <script>
             const projectTypes = @json(
                 $projectTypes->mapWithKeys(fn ($type) => [
-                    (string) $type->id => $type->templateChapters->pluck('title')->values(),
+                    (string) $type->id => $type->templateChapters->map(fn ($chapter) => [
+                        'title' => $chapter->title,
+                        'is_required' => (bool) $chapter->is_required,
+                        'is_user_editable' => (bool) $chapter->is_user_editable,
+                    ])->values(),
                 ])
             );
 
@@ -114,7 +118,9 @@
 
                 chapters.forEach((chapter) => {
                     const listItem = document.createElement('li');
-                    listItem.textContent = chapter;
+                    const required = chapter.is_required ? 'Required' : 'Optional';
+                    const editable = chapter.is_user_editable ? 'Editable' : 'Read only';
+                    listItem.textContent = `${chapter.title} (${required}, ${editable})`;
                     previewList.appendChild(listItem);
                 });
             }

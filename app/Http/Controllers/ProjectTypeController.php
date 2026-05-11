@@ -28,7 +28,7 @@ class ProjectTypeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate(ProjectType::rules());
-        $chapters = $this->parseChapters($request->input('chapters'));
+        $chapters = $this->validateAndNormalizeChapters($request);
 
         if (count($chapters) === 0) {
             return back()
@@ -43,11 +43,28 @@ class ProjectTypeController extends Controller
             ]);
 
             foreach ($chapters as $index => $chapter) {
-                $projectType->templateChapters()->create([
-                    'title' => $chapter,
+                $createdChapter = $projectType->templateChapters()->create([
+                    'title' => $chapter['title'],
+                    'description' => $chapter['description'],
+                    'admin_default_text' => $chapter['admin_default_text'],
                     'sort_order' => $index + 1,
-                    'is_active' => true,
+                    'is_required' => $chapter['is_required'],
+                    'is_user_editable' => $chapter['is_user_editable'],
+                    'is_active' => $chapter['is_active'],
                 ]);
+
+                foreach ($chapter['blocks'] as $blockIndex => $block) {
+                    $createdChapter->blocks()->create([
+                        'block_type' => $block['block_type'],
+                        'editable_by' => $block['editable_by'],
+                        'prompt_text' => $block['prompt_text'],
+                        'admin_content' => $block['admin_content'],
+                        'caption_position' => $block['caption_position'],
+                        'sort_order' => $blockIndex + 1,
+                        'is_required' => $block['is_required'],
+                        'is_active' => $block['is_active'],
+                    ]);
+                }
             }
         });
 
@@ -56,7 +73,7 @@ class ProjectTypeController extends Controller
 
     public function edit(ProjectType $projectType)
     {
-        $projectType->load('templateChapters');
+        $projectType->load('templateChapters.blocks');
 
         return view('project-types.edit', compact('projectType'));
     }
@@ -64,7 +81,7 @@ class ProjectTypeController extends Controller
     public function update(Request $request, ProjectType $projectType)
     {
         $validated = $request->validate(ProjectType::rules($projectType->id));
-        $chapters = $this->parseChapters($request->input('chapters'));
+        $chapters = $this->validateAndNormalizeChapters($request);
 
         if (count($chapters) === 0) {
             return back()
@@ -81,11 +98,28 @@ class ProjectTypeController extends Controller
             $projectType->templateChapters()->delete();
 
             foreach ($chapters as $index => $chapter) {
-                $projectType->templateChapters()->create([
-                    'title' => $chapter,
+                $createdChapter = $projectType->templateChapters()->create([
+                    'title' => $chapter['title'],
+                    'description' => $chapter['description'],
+                    'admin_default_text' => $chapter['admin_default_text'],
                     'sort_order' => $index + 1,
-                    'is_active' => true,
+                    'is_required' => $chapter['is_required'],
+                    'is_user_editable' => $chapter['is_user_editable'],
+                    'is_active' => $chapter['is_active'],
                 ]);
+
+                foreach ($chapter['blocks'] as $blockIndex => $block) {
+                    $createdChapter->blocks()->create([
+                        'block_type' => $block['block_type'],
+                        'editable_by' => $block['editable_by'],
+                        'prompt_text' => $block['prompt_text'],
+                        'admin_content' => $block['admin_content'],
+                        'caption_position' => $block['caption_position'],
+                        'sort_order' => $blockIndex + 1,
+                        'is_required' => $block['is_required'],
+                        'is_active' => $block['is_active'],
+                    ]);
+                }
             }
         });
 
@@ -105,12 +139,92 @@ class ProjectTypeController extends Controller
         return redirect()->route('project-types.index')->with('success', 'Project type deleted successfully.');
     }
 
-    private function parseChapters(?string $chapters): array
+    private function validateAndNormalizeChapters(Request $request): array
     {
-        return collect(preg_split('/\r\n|\r|\n/', (string) $chapters))
-            ->map(static fn (string $line): string => trim($line))
-            ->filter(static fn (string $line): bool => $line !== '')
+        $request->validate([
+            'chapters' => 'required|array|min:1',
+            'chapters.*.title' => 'required|string|max:255',
+            'chapters.*.description' => 'nullable|string|max:2000',
+            'chapters.*.admin_default_text' => 'nullable|string|max:10000',
+            'chapters.*.is_required' => 'nullable|boolean',
+            'chapters.*.is_user_editable' => 'nullable|boolean',
+            'chapters.*.is_active' => 'nullable|boolean',
+            'chapters.*.blocks_definition' => 'nullable|string|max:30000',
+        ]);
+
+        return collect($request->input('chapters', []))
+            ->map(function (array $chapter): array {
+                $toBoolean = static fn ($value): bool => filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? false;
+
+                return [
+                    'title' => trim((string) ($chapter['title'] ?? '')),
+                    'description' => trim((string) ($chapter['description'] ?? '')) ?: null,
+                    'admin_default_text' => trim((string) ($chapter['admin_default_text'] ?? '')) ?: null,
+                    'is_required' => $toBoolean($chapter['is_required'] ?? false),
+                    'is_user_editable' => $toBoolean($chapter['is_user_editable'] ?? false),
+                    'is_active' => $toBoolean($chapter['is_active'] ?? true),
+                    'blocks' => $this->parseBlocksDefinition((string) ($chapter['blocks_definition'] ?? '')),
+                ];
+            })
+            ->filter(static fn (array $chapter): bool => $chapter['title'] !== '')
             ->values()
             ->all();
+    }
+
+    private function parseBlocksDefinition(string $definition): array
+    {
+        $lines = collect(preg_split('/\r\n|\r|\n/', $definition))
+            ->map(static fn (string $line): string => trim($line))
+            ->filter(static fn (string $line): bool => $line !== '' && !str_starts_with($line, '#'))
+            ->values();
+
+        $blocks = $lines->map(static function (string $line): array {
+            $parts = array_map('trim', explode('|', $line));
+            $type = strtolower($parts[0] ?? 'text_user');
+
+            return match ($type) {
+                'text_admin' => [
+                    'block_type' => 'text',
+                    'editable_by' => 'admin',
+                    'is_required' => false,
+                    'caption_position' => null,
+                    'prompt_text' => $parts[1] ?? null,
+                    'admin_content' => $parts[2] ?? ($parts[1] ?? null),
+                    'is_active' => true,
+                ],
+                'image_user' => [
+                    'block_type' => 'image',
+                    'editable_by' => 'user',
+                    'is_required' => strtolower($parts[1] ?? '') === 'required',
+                    'caption_position' => in_array(strtolower($parts[2] ?? ''), ['above', 'below'], true) ? strtolower($parts[2]) : 'below',
+                    'prompt_text' => $parts[3] ?? ($parts[2] ?? 'Upload an image'),
+                    'admin_content' => null,
+                    'is_active' => true,
+                ],
+                default => [
+                    'block_type' => 'text',
+                    'editable_by' => 'user',
+                    'is_required' => strtolower($parts[1] ?? '') === 'required',
+                    'caption_position' => null,
+                    'prompt_text' => $parts[2] ?? ($parts[1] ?? $line),
+                    'admin_content' => null,
+                    'is_active' => true,
+                ],
+            };
+        })->all();
+
+        if (count($blocks) > 0) {
+            return $blocks;
+        }
+
+        return [[
+            'block_type' => 'text',
+            'editable_by' => 'user',
+            'is_required' => true,
+            'caption_position' => null,
+            'prompt_text' => 'Complete this section.',
+            'admin_content' => null,
+            'is_active' => true,
+        ]];
     }
 }
