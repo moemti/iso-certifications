@@ -8,21 +8,60 @@
             <div class="alert alert-error">{{ session('error') }}</div>
         @endif
 
-        <div class="doc-layout">
+        <div class="doc-layout" data-doc-reader>
             <aside class="doc-sidebar" aria-label="Project Chapters">
                 <h2 class="doc-sidebar-title">{{ $project->name }}</h2>
                 <p class="doc-sidebar-subtitle">{{ $project->projectType->name }}</p>
 
+                <div class="doc-view-controls doc-view-controls--sidebar">
+                    <button type="button" class="doc-view-button is-active" data-reader-mode="selected">Selected page</button>
+                    <button type="button" class="doc-view-button" data-reader-mode="all">All pages</button>
+                </div>
+
                 <ul class="doc-chapter-nav">
+                    <li>
+                        <button type="button" class="doc-nav-link is-active" data-reader-target="all">
+                            <span>All pages</span>
+                        </button>
+                    </li>
                     @foreach ($project->chapters as $chapter)
-                        <li>
-                            <a href="#chapter-{{ $chapter->id }}" class="doc-nav-link">
+                        <li class="doc-nav-group">
+                            <button
+                                type="button"
+                                class="doc-nav-link"
+                                data-reader-target="chapter-{{ $chapter->id }}"
+                            >
                                 <span>{{ $chapter->sort_order }}.</span>
                                 <span>{{ $chapter->title }}</span>
-                            </a>
+                            </button>
+
+                            @if ($chapter->blocks->isNotEmpty())
+                                <ul class="doc-block-nav">
+                                    @foreach ($chapter->blocks as $block)
+                                        <li>
+                                            <button
+                                                type="button"
+                                                class="doc-nav-link doc-nav-link--block"
+                                                data-reader-target="chapter-{{ $chapter->id }}"
+                                                data-reader-block="block-{{ $block->id }}"
+                                            >
+                                                <span>{{ $chapter->sort_order }}.{{ $loop->iteration }}</span>
+                                                <span>{{ $block->prompt_text ?: ucfirst($block->block_type) . ' block' }}</span>
+                                            </button>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
                         </li>
                     @endforeach
                 </ul>
+
+                @if (auth()->user()->IsAdmin)
+                    <p class="doc-structure-note">
+                        Need to add or remove chapters and blocks?
+                        <a href="{{ route('project-types.edit', $project->projectType) }}">Edit the template structure</a>.
+                    </p>
+                @endif
             </aside>
 
             <section class="doc-main" aria-label="Document Content">
@@ -33,7 +72,7 @@
                     </header>
 
                     @foreach ($project->chapters as $chapter)
-                        <article class="doc-chapter" id="chapter-{{ $chapter->id }}">
+                        <article class="doc-chapter" id="chapter-{{ $chapter->id }}" data-reader-page="chapter-{{ $chapter->id }}">
                             <div class="doc-chapter-head">
                                 <h2>{{ $chapter->sort_order }}. {{ $chapter->title }}</h2>
                                 <div class="doc-tags">
@@ -64,7 +103,7 @@
                                         : in_array($block->editable_by, ['user', 'both'], true);
                                 @endphp
 
-                                <section class="doc-block">
+                                <section class="doc-block" id="block-{{ $block->id }}">
                                     <div class="doc-block-head">
                                         <span class="doc-tag">{{ strtoupper($block->block_type) }}</span>
                                         @if ($block->is_required)
@@ -144,4 +183,77 @@
             </section>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const root = document.querySelector('[data-doc-reader]');
+            if (!root) {
+                return;
+            }
+
+            const pageSections = Array.from(root.querySelectorAll('[data-reader-page]'));
+            const modeButtons = Array.from(root.querySelectorAll('[data-reader-mode]'));
+            const navButtons = Array.from(root.querySelectorAll('[data-reader-target]'));
+
+            if (pageSections.length === 0) {
+                return;
+            }
+
+            let currentMode = 'selected';
+            let selectedPage = pageSections[0].dataset.readerPage;
+
+            const updateView = function () {
+                pageSections.forEach((section) => {
+                    const shouldShow = currentMode === 'all' || section.dataset.readerPage === selectedPage;
+                    section.style.display = shouldShow ? '' : 'none';
+                });
+
+                modeButtons.forEach((button) => {
+                    button.classList.toggle('is-active', button.dataset.readerMode === currentMode);
+                });
+
+                navButtons.forEach((button) => {
+                    const target = button.dataset.readerTarget;
+                    const isActive = currentMode === 'all'
+                        ? target === 'all'
+                        : target === selectedPage;
+
+                    button.classList.toggle('is-active', isActive);
+                });
+            };
+
+            modeButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    currentMode = button.dataset.readerMode === 'all' ? 'all' : 'selected';
+                    updateView();
+                });
+            });
+
+            navButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    const target = button.dataset.readerTarget;
+
+                    if (target === 'all') {
+                        currentMode = 'all';
+                        updateView();
+                        return;
+                    }
+
+                    selectedPage = target;
+                    currentMode = 'selected';
+                    updateView();
+
+                    const blockId = button.dataset.readerBlock;
+                    const block = blockId ? document.getElementById(blockId) : null;
+                    const page = document.getElementById(target);
+
+                    window.requestAnimationFrame(function () {
+                        (block || page)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                });
+            });
+
+            updateView();
+        })();
+    </script>
 </x-layouts.app>

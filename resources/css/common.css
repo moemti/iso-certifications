@@ -1106,19 +1106,88 @@ input.form-input:-moz-autofill:focus {
 
 .doc-nav-link {
     display: flex;
+    width: 100%;
     gap: 8px;
     align-items: baseline;
     text-decoration: none;
+    text-align: left;
     color: #dbe6f4;
     font-size: 13px;
     padding: 9px 10px;
     border-radius: 8px;
     border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
 }
 
 .doc-nav-link:hover {
     border-color: rgba(47, 183, 255, 0.45);
     background: rgba(47, 183, 255, 0.12);
+}
+
+.doc-nav-link.is-active {
+    border-color: rgba(110, 231, 183, 0.48);
+    background: rgba(110, 231, 183, 0.16);
+    color: #ecfdf5;
+}
+
+.doc-nav-group {
+    display: grid;
+    gap: 6px;
+}
+
+.doc-block-nav {
+    list-style: none;
+    margin: 0 0 0 12px;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+}
+
+.doc-nav-link--block {
+    color: #bfdbfe;
+    font-size: 12px;
+    padding: 7px 9px;
+}
+
+.doc-view-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.doc-view-controls--sidebar {
+    margin-bottom: 14px;
+}
+
+.doc-view-button {
+    border: 1px solid rgba(148, 163, 184, 0.42);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #cbd5e1;
+    background: rgba(30, 41, 59, 0.7);
+    cursor: pointer;
+}
+
+.doc-view-button.is-active {
+    color: #082f49;
+    border-color: rgba(125, 211, 252, 0.62);
+    background: linear-gradient(135deg, #7dd3fc, #6ee7b7);
+}
+
+.doc-structure-note {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(148, 163, 184, 0.28);
+    color: #94a3b8;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.doc-structure-note a {
+    color: #7dd3fc;
 }
 
 .doc-main {
@@ -1148,6 +1217,187 @@ input.form-input:-moz-autofill:focus {
 .doc-header p {
     margin: 8px 0 0;
     color: #475569;
+}
+
+/* ── Project Type Word Editor ────────────────────────────── */
+
+.word-editor-shell {
+    display: grid;
+    gap: 18px;
+}
+
+.word-editor-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.word-editor-title {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 24px;
+}
+
+.word-editor-subtitle {
+    margin: 6px 0 0;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.word-editor-layout {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.word-editor-sidebar {
+    position: sticky;
+    top: calc(var(--header-height) + 16px);
+    background: rgba(9, 19, 35, 0.92);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.word-editor-sidebar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.word-editor-sidebar-head h2 {
+    margin: 0;
+    color: #e2e8f0;
+    font-size: 16px;
+}
+
+.word-sidebar-add {
+    min-height: 32px;
+    padding: 0 12px;
+    font-size: 12px;
+}
+
+.word-editor-main {
+    min-width: 0;
+}
+
+.word-page-stack {
+    display: grid;
+    gap: 14px;
+}
+
+.word-page {
+    background: #f8fafc;
+    border: 1px solid #d1d5db;
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 16px 45px rgba(2, 6, 23, 0.24);
+}
+
+.word-page--meta {
+    border-left: 6px solid #7dd3fc;
+}
+
+.word-page-meta-title {
+    margin: 0 0 14px;
+    color: #0f172a;
+    font-size: 20px;
+}
+
+.word-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.word-page-title {
+    margin: 0;
+    font-size: 22px;
+    color: #0f172a;
+}
+
+.word-danger-action {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 12px;
+    color: #7f1d1d;
+    border: 1px solid #fecaca;
+    background: #fee2e2;
+}
+
+.word-danger-action:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.word-danger-action--small {
+    min-height: 30px;
+    padding: 0 10px;
+}
+
+.word-blocks-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.pt-block-list {
+    display: grid;
+    gap: 10px;
+}
+
+.pt-block-row {
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 12px;
+    background: #ffffff;
+}
+
+.pt-block-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pt-block-label {
+    color: #334155;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.word-page .form-label {
+    color: #334155;
+}
+
+.word-page .form-input {
+    color: #0f172a !important;
+    border-color: #94a3b8;
+    background: #ffffff !important;
+}
+
+.word-page .form-check {
+    color: #334155;
+}
+
+.word-editor-footer-actions {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 .doc-chapter {
@@ -1302,7 +1552,32 @@ input.form-input:-moz-autofill:focus {
         position: static;
     }
 
+    .word-editor-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .word-editor-sidebar {
+        position: static;
+    }
+
     .doc-paper {
         padding: 22px;
+    }
+}
+
+@media (max-width: 640px) {
+    .doc-page-shell {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .word-page {
+        padding: 16px;
+    }
+
+    .word-page-header,
+    .word-blocks-header {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }
