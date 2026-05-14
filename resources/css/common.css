@@ -1235,78 +1235,86 @@ input.form-input:-moz-autofill:focus {
 }
 
 .word-editor-title {
-    margin: 0;
-    color: #e2e8f0;
-    font-size: 24px;
+    color: #e2e8f0; /* Light title for dark background */
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
 }
 
 .word-editor-subtitle {
-    margin: 6px 0 0;
-    color: #94a3b8;
-    font-size: 14px;
+    color: #cbd5e1;
+    font-size: 16px;
 }
 
 .word-editor-layout {
     display: grid;
-    grid-template-columns: 300px minmax(0, 1fr);
+    grid-template-columns: 280px minmax(0, 1fr);
     gap: 20px;
     align-items: start;
 }
 
 .word-editor-sidebar {
+    background-color: #f1f5f9; /* Softer light gray for better contrast */
+    color: #334155; /* Darker, readable sidebar text */
+    border-right: 1px solid #cbd5e1; /* Softer border color */
+    border-radius: 14px;
+    padding: 16px; /* Add padding for better spacing */
     position: sticky;
     top: calc(var(--header-height) + 16px);
-    background: rgba(9, 19, 35, 0.92);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px;
+    max-height: calc(100vh - var(--header-height) - 32px);
+    overflow-y: auto;
 }
 
-.word-editor-sidebar-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+.word-editor-sidebar h2 {
+    color: #1e293b; /* Darker color for sidebar title */
+    font-size: 18px;
+    font-weight: 600;
     margin-bottom: 12px;
 }
 
-.word-editor-sidebar-head h2 {
-    margin: 0;
-    color: #e2e8f0;
-    font-size: 16px;
-}
-
-.word-sidebar-add {
-    min-height: 32px;
-    padding: 0 12px;
-    font-size: 12px;
+.word-editor-sidebar .doc-nav-link,
+.word-editor-sidebar li,
+.word-editor-sidebar button {
+    color: #334155 !important; /* Ensure sidebar links and headings are readable */
 }
 
 .word-editor-main {
     min-width: 0;
 }
 
+.word-editor-title {
+    color: #e2e8f0; /* Light title for dark background */
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.word-editor-subtitle {
+    color: #cbd5e1;
+    font-size: 16px;
+}
+
 .word-page-stack {
     display: grid;
     gap: 14px;
+    max-width: 1120px;
 }
 
 .word-page {
-    background: #f8fafc;
-    border: 1px solid #d1d5db;
+    background: #ffffff; /* White background for pages */
+    border: 1px solid #e5e7eb; /* Light border color */
     border-radius: 14px;
     padding: 24px;
-    box-shadow: 0 16px 45px rgba(2, 6, 23, 0.24);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
 }
 
 .word-page--meta {
-    border-left: 6px solid #7dd3fc;
+    border-left: 4px solid #3b82f6; /* Professional blue for meta page */
 }
 
 .word-page-meta-title {
     margin: 0 0 14px;
-    color: #0f172a;
-    font-size: 20px;
+    color: #1e293b; /* Darker text color for meta title */
 }
 
 .word-page-header {
@@ -1558,10 +1566,13 @@ input.form-input:-moz-autofill:focus {
 
     .word-editor-sidebar {
         position: static;
+        max-height: none;
+        border-right: 1px solid #cbd5e1;
+        border-bottom: 1px solid #ddd;
     }
 
-    .doc-paper {
-        padding: 22px;
+    .word-editor-main {
+        margin-top: 0;
     }
 }
 
@@ -1581,3 +1592,4 @@ input.form-input:-moz-autofill:focus {
         align-items: flex-start;
     }
 }
+

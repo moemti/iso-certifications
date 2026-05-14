@@ -133,275 +133,239 @@
 
         <section class="word-editor-main" aria-label="Project Type Template Document">
             <div class="word-page-stack" id="chapter-builder">
-                <article class="word-page word-page--meta" data-meta-page>
-                    <h3 class="word-page-meta-title">Template Information</h3>
-
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div class="form-field md:col-span-2">
-                            <label class="form-label" for="name">Name *</label>
-                            <input
-                                class="form-input"
-                                type="text"
-                                id="name"
-                                name="name"
-                                value="{{ old('name', $projectType->name ?? '') }}"
-                                required
-                                maxlength="255"
-                            >
-                            @error('name')
-                                <span class="form-error">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-field md:col-span-2">
-                            <label class="form-label" for="description">Description</label>
-                            <textarea
-                                class="form-input"
-                                id="description"
-                                name="description"
-                                rows="4"
-                                maxlength="2000"
-                            >{{ old('description', $projectType->description ?? '') }}</textarea>
-                            @error('description')
-                                <span class="form-error">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-field md:col-span-2">
-                            <label class="form-check" style="margin-top: 0;">
-                                <input
-                                    type="checkbox"
-                                    name="is_active"
-                                    value="1"
-                                    {{ old('is_active', isset($projectType) ? $projectType->is_active : true) ? 'checked' : '' }}
-                                >
-                                Active
-                            </label>
-                            @error('is_active')
-                                <span class="form-error">{{ $message }}</span>
-                            @enderror
-                        </div>
-                    </div>
-                </article>
-
-                @foreach ($chapterRows as $index => $chapter)
-                    @php
-                        $chapterBlocks = $parseBlocksDefinition($chapter['blocks_definition'] ?? null);
-                    @endphp
-                    <article class="word-page chapter-row" data-row-index="{{ $index }}" data-page-id="chapter-page-{{ $index }}">
-                        <div class="word-page-header">
-                            <h3 class="word-page-title">Chapter <span class="chapter-order">{{ $index + 1 }}</span></h3>
-                            <button type="button" class="button word-danger-action" data-remove-row>Delete Chapter</button>
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                                <label class="form-label">Chapter Title *</label>
-                                <input class="form-input" type="text" name="chapters[{{ $index }}][title]" value="{{ $chapter['title'] ?? '' }}" maxlength="255" required data-chapter-title>
+                    <article class="word-page word-page--meta" data-meta-page>
+                        <h3 class="word-page-meta-title">Template Information</h3>
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div class="form-field md:col-span-2">
+                                <label class="form-label" for="name">Name *</label>
+                                <input class="form-input" type="text" id="name" name="name" value="{{ old('name', $projectType->name ?? '') }}" required maxlength="255">
+                                @error('name')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
                             </div>
-
-                            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                                <label class="form-label">Admin Guidance (Optional)</label>
-                                <input class="form-input" type="text" name="chapters[{{ $index }}][description]" value="{{ $chapter['description'] ?? '' }}" maxlength="2000" placeholder="Short instruction visible to user">
-                            </div>
-
-                            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                                <label class="form-label">Default Template Text</label>
-                                <textarea class="form-input" name="chapters[{{ $index }}][admin_default_text]" rows="5" maxlength="10000" placeholder="This text appears like Word template content in the user project document.">{{ $chapter['admin_default_text'] ?? '' }}</textarea>
-                            </div>
-
-                            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                                <div class="word-blocks-header">
-                                    <label class="form-label" style="margin-bottom: 0;">Chapter Blocks</label>
-                                    <button type="button" class="button button-secondary word-sidebar-add" data-add-block>Add Block</button>
-                                </div>
-
-                                <div class="pt-block-list" data-block-list>
-                                    @foreach ($chapterBlocks as $blockIndex => $block)
-                                        <div class="pt-block-row" data-block-index="{{ $blockIndex }}">
-                                            <div class="pt-block-top">
-                                                <span class="pt-block-label">Block <span class="block-order">{{ $blockIndex + 1 }}</span></span>
-                                                <button type="button" class="button word-danger-action word-danger-action--small" data-remove-block>Delete Block</button>
-                                            </div>
-
-                                            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                                                <div class="form-field" style="margin-bottom: 0;">
-                                                    <label class="form-label">Type</label>
-                                                    <select class="form-input pt-block-type" data-block-type>
-                                                        <option value="text_user" {{ ($block['type'] ?? 'text_user') === 'text_user' ? 'selected' : '' }}>Text - User editable</option>
-                                                        <option value="text_admin" {{ ($block['type'] ?? '') === 'text_admin' ? 'selected' : '' }}>Text - Admin fixed</option>
-                                                        <option value="image_user" {{ ($block['type'] ?? '') === 'image_user' ? 'selected' : '' }}>Image - User upload</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-field pt-block-required-wrap" style="margin-bottom: 0;">
-                                                    <label class="form-check" style="margin-top: 24px;">
-                                                        <input type="checkbox" class="pt-block-required" {{ !empty($block['required']) ? 'checked' : '' }}>
-                                                        Required
-                                                    </label>
-                                                </div>
-
-                                                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                                                    <label class="form-label">Prompt</label>
-                                                    <input type="text" class="form-input pt-block-prompt" value="{{ $block['prompt'] ?? '' }}" maxlength="2000" placeholder="Prompt shown to user">
-                                                </div>
-
-                                                <div class="form-field md:col-span-2 pt-block-admin-wrap" style="margin-bottom: 0;">
-                                                    <label class="form-label">Admin Text</label>
-                                                    <textarea class="form-input pt-block-admin" rows="3" maxlength="10000" placeholder="Static admin paragraph">{{ $block['admin_content'] ?? '' }}</textarea>
-                                                </div>
-
-                                                <div class="form-field pt-block-caption-wrap" style="margin-bottom: 0;">
-                                                    <label class="form-label">Caption Position</label>
-                                                    <select class="form-input pt-block-caption">
-                                                        <option value="above" {{ ($block['caption'] ?? 'below') === 'above' ? 'selected' : '' }}>Above image</option>
-                                                        <option value="below" {{ ($block['caption'] ?? 'below') === 'below' ? 'selected' : '' }}>Below image</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-
-                                <textarea class="form-input" name="chapters[{{ $index }}][blocks_definition]" rows="1" style="display: none;" data-blocks-definition>{{ $chapter['blocks_definition'] ?? '' }}</textarea>
-                                <p class="text-xs text-gray-400 mt-2">Blocks are exported automatically to template format at save.</p>
-                            </div>
-
-                            <div class="flex flex-wrap items-center gap-4 md:col-span-2">
-                                <label class="form-check" style="margin-top: 0;">
-                                    <input type="hidden" name="chapters[{{ $index }}][is_required]" value="0">
-                                    <input type="checkbox" name="chapters[{{ $index }}][is_required]" value="1" {{ !empty($chapter['is_required']) ? 'checked' : '' }}>
-                                    Required section
-                                </label>
-
-                                <label class="form-check" style="margin-top: 0;">
-                                    <input type="hidden" name="chapters[{{ $index }}][is_user_editable]" value="0">
-                                    <input type="checkbox" name="chapters[{{ $index }}][is_user_editable]" value="1" {{ !empty($chapter['is_user_editable']) ? 'checked' : '' }}>
-                                    User can edit
-                                </label>
-
-                                <label class="form-check" style="margin-top: 0;">
-                                    <input type="hidden" name="chapters[{{ $index }}][is_active]" value="0">
-                                    <input type="checkbox" name="chapters[{{ $index }}][is_active]" value="1" {{ !empty($chapter['is_active']) ? 'checked' : '' }}>
-                                    Active
-                                </label>
+                            <div class="form-field md:col-span-2">
+                                <label class="form-label" for="description">Description</label>
+                                <textarea class="form-input" id="description" name="description">{{ old('description', $projectType->description ?? '') }}</textarea>
+                                @error('description')
+                                    <span class="form-error">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
                     </article>
-                @endforeach
-            </div>
+                    @foreach ($chapterRows as $index => $chapter)
+                        @php
+                            $chapterBlocks = $parseBlocksDefinition($chapter['blocks_definition'] ?? null);
+                        @endphp
+                        <article class="word-page chapter-row" data-row-index="{{ $index }}" data-page-id="chapter-page-{{ $index }}">
+                            <div class="word-page-header">
+                                <h3 class="word-page-title">Chapter <span class="chapter-order">{{ $index + 1 }}</span></h3>
+                                <button type="button" class="button word-danger-action" data-remove-row>Delete Chapter</button>
+                            </div>
 
-            @error('chapters')
-                <span class="form-error">{{ $message }}</span>
-            @enderror
+                            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                                    <label class="form-label">Chapter Title *</label>
+                                    <input class="form-input" type="text" name="chapters[{{ $index }}][title]" value="{{ $chapter['title'] ?? '' }}" maxlength="255" required data-chapter-title>
+                                </div>
+
+                                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                                    <label class="form-label">Admin Guidance (Optional)</label>
+                                    <input class="form-input" type="text" name="chapters[{{ $index }}][description]" value="{{ $chapter['description'] ?? '' }}" maxlength="2000" placeholder="Short instruction visible to user">
+                                </div>
+
+                                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                                    <label class="form-label">Default Template Text</label>
+                                    <textarea class="form-input" name="chapters[{{ $index }}][admin_default_text]" rows="5" maxlength="10000" placeholder="This text appears like Word template content in the user project document.">{{ $chapter['admin_default_text'] ?? '' }}</textarea>
+                                </div>
+
+                                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                                    <div class="word-blocks-header">
+                                        <label class="form-label" style="margin-bottom: 0;">Chapter Blocks</label>
+                                        <button type="button" class="button button-secondary word-sidebar-add" data-add-block>Add Block</button>
+                                    </div>
+
+                                    <div class="pt-block-list" data-block-list>
+                                        @foreach ($chapterBlocks as $blockIndex => $block)
+                                            <div class="pt-block-row" data-block-index="{{ $blockIndex }}">
+                                                <div class="pt-block-top">
+                                                    <span class="pt-block-label">Block <span class="block-order">{{ $blockIndex + 1 }}</span></span>
+                                                    <button type="button" class="button word-danger-action word-danger-action--small" data-remove-block>Delete Block</button>
+                                                </div>
+
+                                                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                                    <div class="form-field" style="margin-bottom: 0;">
+                                                        <label class="form-label">Type</label>
+                                                        <select class="form-input pt-block-type" data-block-type>
+                                                            <option value="text_user" {{ ($block['type'] ?? 'text_user') === 'text_user' ? 'selected' : '' }}>Text - User editable</option>
+                                                            <option value="text_admin" {{ ($block['type'] ?? '') === 'text_admin' ? 'selected' : '' }}>Text - Admin fixed</option>
+                                                            <option value="image_user" {{ ($block['type'] ?? '') === 'image_user' ? 'selected' : '' }}>Image - User upload</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="form-field pt-block-required-wrap" style="margin-bottom: 0;">
+                                                        <label class="form-check" style="margin-top: 24px;">
+                                                            <input type="checkbox" class="pt-block-required" {{ !empty($block['required']) ? 'checked' : '' }}>
+                                                            Required
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                                                        <label class="form-label">Prompt</label>
+                                                        <input type="text" class="form-input pt-block-prompt" value="{{ $block['prompt'] ?? '' }}" maxlength="2000" placeholder="Prompt shown to user">
+                                                    </div>
+
+                                                    <div class="form-field md:col-span-2 pt-block-admin-wrap" style="margin-bottom: 0;">
+                                                        <label class="form-label">Admin Text</label>
+                                                        <textarea class="form-input pt-block-admin" rows="3" maxlength="10000" placeholder="Static admin paragraph">{{ $block['admin_content'] ?? '' }}</textarea>
+                                                    </div>
+
+                                                    <div class="form-field pt-block-caption-wrap" style="margin-bottom: 0;">
+                                                        <label class="form-label">Caption Position</label>
+                                                        <select class="form-input pt-block-caption">
+                                                            <option value="above" {{ ($block['caption'] ?? 'below') === 'above' ? 'selected' : '' }}>Above image</option>
+                                                            <option value="below" {{ ($block['caption'] ?? 'below') === 'below' ? 'selected' : '' }}>Below image</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+
+                                    <textarea class="form-input" name="chapters[{{ $index }}][blocks_definition]" rows="1" style="display: none;" data-blocks-definition>{{ $chapter['blocks_definition'] ?? '' }}</textarea>
+                                    <p class="text-xs text-gray-400 mt-2">Blocks are exported automatically to template format at save.</p>
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-4 md:col-span-2">
+                                    <label class="form-check" style="margin-top: 0;">
+                                        <input type="hidden" name="chapters[{{ $index }}][is_required]" value="0">
+                                        <input type="checkbox" name="chapters[{{ $index }}][is_required]" value="1" {{ !empty($chapter['is_required']) ? 'checked' : '' }}>
+                                        Required section
+                                    </label>
+
+                                    <label class="form-check" style="margin-top: 0;">
+                                        <input type="hidden" name="chapters[{{ $index }}][is_user_editable]" value="0">
+                                        <input type="checkbox" name="chapters[{{ $index }}][is_user_editable]" value="1" {{ !empty($chapter['is_user_editable']) ? 'checked' : '' }}>
+                                        User can edit
+                                    </label>
+
+                                    <label class="form-check" style="margin-top: 0;">
+                                        <input type="hidden" name="chapters[{{ $index }}][is_active]" value="0">
+                                        <input type="checkbox" name="chapters[{{ $index }}][is_active]" value="1" {{ !empty($chapter['is_active']) ? 'checked' : '' }}>
+                                        Active
+                                    </label>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+            </div>
         </section>
     </div>
+</div>
 
-    <template id="chapter-row-template">
-        <article class="word-page chapter-row" data-row-index="__INDEX__" data-page-id="chapter-page-__INDEX__">
-            <div class="word-page-header">
-                <h3 class="word-page-title">Chapter <span class="chapter-order">__INDEX_ONE__</span></h3>
-                <button type="button" class="button word-danger-action" data-remove-row>Delete Chapter</button>
+<template id="chapter-row-template">
+    <article class="word-page chapter-row" data-row-index="__INDEX__" data-page-id="chapter-page-__INDEX__">
+        <div class="word-page-header">
+            <h3 class="word-page-title">Chapter <span class="chapter-order">__INDEX_ONE__</span></h3>
+            <button type="button" class="button word-danger-action" data-remove-row>Delete Chapter</button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                <label class="form-label">Chapter Title *</label>
+                <input class="form-input" type="text" name="chapters[__INDEX__][title]" value="" maxlength="255" required data-chapter-title>
             </div>
 
-            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                    <label class="form-label">Chapter Title *</label>
-                    <input class="form-input" type="text" name="chapters[__INDEX__][title]" maxlength="255" required data-chapter-title>
-                </div>
-
-                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                    <label class="form-label">Admin Guidance (Optional)</label>
-                    <input class="form-input" type="text" name="chapters[__INDEX__][description]" maxlength="2000" placeholder="Short instruction visible to user">
-                </div>
-
-                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                    <label class="form-label">Default Template Text</label>
-                    <textarea class="form-input" name="chapters[__INDEX__][admin_default_text]" rows="5" maxlength="10000" placeholder="This text appears like Word template content in the user project document."></textarea>
-                </div>
-
-                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                    <div class="word-blocks-header">
-                        <label class="form-label" style="margin-bottom: 0;">Chapter Blocks</label>
-                        <button type="button" class="button button-secondary word-sidebar-add" data-add-block>Add Block</button>
-                    </div>
-
-                    <div class="pt-block-list" data-block-list>
-                        __BLOCK_ROW__
-                    </div>
-
-                    <textarea class="form-input" name="chapters[__INDEX__][blocks_definition]" rows="1" style="display: none;" data-blocks-definition>text_user|required|Complete this section</textarea>
-                    <p class="text-xs text-gray-400 mt-2">Blocks are exported automatically to template format at save.</p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-4 md:col-span-2">
-                    <label class="form-check" style="margin-top: 0;">
-                        <input type="hidden" name="chapters[__INDEX__][is_required]" value="0">
-                        <input type="checkbox" name="chapters[__INDEX__][is_required]" value="1" checked>
-                        Required section
-                    </label>
-
-                    <label class="form-check" style="margin-top: 0;">
-                        <input type="hidden" name="chapters[__INDEX__][is_user_editable]" value="0">
-                        <input type="checkbox" name="chapters[__INDEX__][is_user_editable]" value="1" checked>
-                        User can edit
-                    </label>
-
-                    <label class="form-check" style="margin-top: 0;">
-                        <input type="hidden" name="chapters[__INDEX__][is_active]" value="0">
-                        <input type="checkbox" name="chapters[__INDEX__][is_active]" value="1" checked>
-                        Active
-                    </label>
-                </div>
-            </div>
-        </article>
-    </template>
-
-    <template id="block-row-template">
-        <div class="pt-block-row" data-block-index="__BLOCK_INDEX__">
-            <div class="pt-block-top">
-                <span class="pt-block-label">Block <span class="block-order">__BLOCK_ORDER__</span></span>
-                <button type="button" class="button word-danger-action word-danger-action--small" data-remove-block>Delete Block</button>
+            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                <label class="form-label">Admin Guidance (Optional)</label>
+                <input class="form-input" type="text" name="chapters[__INDEX__][description]" value="" maxlength="2000" placeholder="Short instruction visible to user">
             </div>
 
-            <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <div class="form-field" style="margin-bottom: 0;">
-                    <label class="form-label">Type</label>
-                    <select class="form-input pt-block-type" data-block-type>
-                        <option value="text_user" selected>Text - User editable</option>
-                        <option value="text_admin">Text - Admin fixed</option>
-                        <option value="image_user">Image - User upload</option>
-                    </select>
+            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                <label class="form-label">Default Template Text</label>
+                <textarea class="form-input" name="chapters[__INDEX__][admin_default_text]" rows="5" maxlength="10000" placeholder="This text appears like Word template content in the user project document."></textarea>
+            </div>
+
+            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                <div class="word-blocks-header">
+                    <label class="form-label" style="margin-bottom: 0;">Chapter Blocks</label>
+                    <button type="button" class="button button-secondary word-sidebar-add" data-add-block>Add Block</button>
                 </div>
 
-                <div class="form-field pt-block-required-wrap" style="margin-bottom: 0;">
-                    <label class="form-check" style="margin-top: 24px;">
-                        <input type="checkbox" class="pt-block-required" checked>
-                        Required
-                    </label>
+                <div class="pt-block-list" data-block-list>
+                    __BLOCK_ROW__
                 </div>
 
-                <div class="form-field md:col-span-2" style="margin-bottom: 0;">
-                    <label class="form-label">Prompt</label>
-                    <input type="text" class="form-input pt-block-prompt" maxlength="2000" placeholder="Prompt shown to user">
-                </div>
+                <textarea class="form-input" name="chapters[__INDEX__][blocks_definition]" rows="1" style="display: none;" data-blocks-definition>text_user|required|Complete this section</textarea>
+                <p class="text-xs text-gray-400 mt-2">Blocks are exported automatically to template format at save.</p>
+            </div>
 
-                <div class="form-field md:col-span-2 pt-block-admin-wrap" style="margin-bottom: 0;">
-                    <label class="form-label">Admin Text</label>
-                    <textarea class="form-input pt-block-admin" rows="3" maxlength="10000" placeholder="Static admin paragraph"></textarea>
-                </div>
+            <div class="flex flex-wrap items-center gap-4 md:col-span-2">
+                <label class="form-check" style="margin-top: 0;">
+                    <input type="hidden" name="chapters[__INDEX__][is_required]" value="0">
+                    <input type="checkbox" name="chapters[__INDEX__][is_required]" value="1" checked>
+                    Required section
+                </label>
 
-                <div class="form-field pt-block-caption-wrap" style="margin-bottom: 0;">
-                    <label class="form-label">Caption Position</label>
-                    <select class="form-input pt-block-caption">
-                        <option value="above">Above image</option>
-                        <option value="below" selected>Below image</option>
-                    </select>
-                </div>
+                <label class="form-check" style="margin-top: 0;">
+                    <input type="hidden" name="chapters[__INDEX__][is_user_editable]" value="0">
+                    <input type="checkbox" name="chapters[__INDEX__][is_user_editable]" value="1" checked>
+                    User can edit
+                </label>
+
+                <label class="form-check" style="margin-top: 0;">
+                    <input type="hidden" name="chapters[__INDEX__][is_active]" value="0">
+                    <input type="checkbox" name="chapters[__INDEX__][is_active]" value="1" checked>
+                    Active
+                </label>
             </div>
         </div>
-    </template>
-</div>
+    </article>
+</template>
+
+<template id="block-row-template">
+    <div class="pt-block-row" data-block-index="__BLOCK_INDEX__">
+        <div class="pt-block-top">
+            <span class="pt-block-label">Block <span class="block-order">__BLOCK_ORDER__</span></span>
+            <button type="button" class="button word-danger-action word-danger-action--small" data-remove-block>Delete Block</button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div class="form-field" style="margin-bottom: 0;">
+                <label class="form-label">Type</label>
+                <select class="form-input pt-block-type" data-block-type>
+                    <option value="text_user" selected>Text - User editable</option>
+                    <option value="text_admin">Text - Admin fixed</option>
+                    <option value="image_user">Image - User upload</option>
+                </select>
+            </div>
+
+            <div class="form-field pt-block-required-wrap" style="margin-bottom: 0;">
+                <label class="form-check" style="margin-top: 24px;">
+                    <input type="checkbox" class="pt-block-required" checked>
+                    Required
+                </label>
+            </div>
+
+            <div class="form-field md:col-span-2" style="margin-bottom: 0;">
+                <label class="form-label">Prompt</label>
+                <input type="text" class="form-input pt-block-prompt" value="Complete this section" maxlength="2000" placeholder="Prompt shown to user">
+            </div>
+
+            <div class="form-field md:col-span-2 pt-block-admin-wrap" style="margin-bottom: 0; display: none;">
+                <label class="form-label">Admin Text</label>
+                <textarea class="form-input pt-block-admin" rows="3" maxlength="10000" placeholder="Static admin paragraph"></textarea>
+            </div>
+
+            <div class="form-field pt-block-caption-wrap" style="margin-bottom: 0; display: none;">
+                <label class="form-label">Caption Position</label>
+                <select class="form-input pt-block-caption">
+                    <option value="above">Above image</option>
+                    <option value="below" selected>Below image</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</template>
 
 <script>
     (function () {
@@ -413,8 +377,8 @@
         const chapterBuilder = root.querySelector('#chapter-builder');
         const chapterOutline = root.querySelector('#chapter-outline-nav');
         const addChapterButton = root.querySelector('#add-chapter-row');
-        const chapterTemplate = root.querySelector('#chapter-row-template');
-        const blockTemplate = root.querySelector('#block-row-template');
+        const chapterTemplate = document.querySelector('#chapter-row-template');
+        const blockTemplate = document.querySelector('#block-row-template');
         const modeButtons = Array.from(root.querySelectorAll('[data-editor-mode]'));
 
         if (!chapterBuilder || !chapterOutline || !addChapterButton || !chapterTemplate || !blockTemplate) {
